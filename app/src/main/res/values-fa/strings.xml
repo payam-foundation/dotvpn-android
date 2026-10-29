@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">dotvpn</string>
+    <string name="status_off">متصل نیست</string>
+    <string name="status_connecting">در حال اتصال…</string>
+    <string name="status_connected">متصل شد</string>
+    <string name="status_error">اتصال ناموفق بود: %1$s</string>
+    <string name="carrier">مسیر: %1$s</string>
+    <string name="connect">اتصال</string>
+    <string name="disconnect">قطع اتصال</string>
+    <string name="no_invite">برای شروع یک دعوت‌نامه اضافه کنید</string>
+    <string name="paste_invite">چسباندن دعوت‌نامه</string>
+    <string name="scan_qr">اسکن QR</string>
+    <string name="invite_bad">این دعوت‌نامه معتبر نیست</string>
+    <string name="invite_saved">دعوت‌نامه ذخیره شد</string>
+    <string name="servers">سرورها</string>
+    <string name="split_tunnel">برنامه‌ها</string>
+    <string name="split_all">همه برنامه‌ها از VPN استفاده می‌کنند</string>
+    <string name="split_only">فقط برنامه‌های انتخاب‌شده از VPN استفاده می‌کنند</string>
+    <string name="split_except">برنامه‌های انتخاب‌شده از VPN عبور نمی‌کنند</string>
+    <string name="done">تمام</string>
+    <string name="always_on">تنظیمات VPN همیشه روشن</string>
+    <string name="always_on_hint">برای قطع‌کن اضطراری، «VPN همیشه روشن» و «مسدود کردن اتصال‌های بدون VPN» را فعال کنید.</string>
+    <string name="notif_channel">وضعیت VPN</string>
+    <string name="notif_title">dotvpn در حال اجراست</string>
+    <string name="notif_stop">قطع اتصال</string>
+</resources>

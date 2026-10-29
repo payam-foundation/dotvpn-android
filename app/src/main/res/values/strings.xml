@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">dotvpn</string>
+    <string name="status_off">Not connected</string>
+    <string name="status_connecting">Connecting…</string>
+    <string name="status_connected">Connected</string>
+    <string name="status_error">Connection failed: %1$s</string>
+    <string name="carrier">Carrier: %1$s</string>
+    <string name="connect">Connect</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="no_invite">Add an invite to begin</string>
+    <string name="paste_invite">Paste invite</string>
+    <string name="scan_qr">Scan QR</string>
+    <string name="invite_bad">That invite is not valid</string>
+    <string name="invite_saved">Invite saved</string>
+    <string name="servers">Servers</string>
+    <string name="split_tunnel">Apps</string>
+    <string name="split_all">All apps use the VPN</string>
+    <string name="split_only">Only selected apps use the VPN</string>
+    <string name="split_except">Selected apps skip the VPN</string>
+    <string name="done">Done</string>
+    <string name="always_on">Always-on VPN settings</string>
+    <string name="always_on_hint">For a kill switch turn on Always-on VPN and Block connections without VPN.</string>
+    <string name="notif_channel">VPN status</string>
+    <string name="notif_title">dotvpn is running</string>
+    <string name="notif_stop">Disconnect</string>
+</resources>
