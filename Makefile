@@ -5,6 +5,7 @@ AAR    := app/libs/dotvpn.aar
 
 .PHONY: aar apk release test vet clean
 aar:
+	mkdir -p $(dir $(AAR))
 	cd $(CLIENT) && gomobile bind -target=android/arm64,android/amd64 -androidapi 26 \
 		-trimpath -ldflags="-checklinkname=0" -o $(CURDIR)/$(AAR) ./mobile
 
