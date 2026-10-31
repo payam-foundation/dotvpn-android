@@ -1,4 +1,4 @@
-package org.dotvpn.android
+package dot.vpn.payam
 
 /** What the Go side reports through Mobile.status(). */
 sealed interface VpnState {

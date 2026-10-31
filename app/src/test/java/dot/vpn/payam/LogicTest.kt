@@ -1,4 +1,4 @@
-package org.dotvpn.android
+package dot.vpn.payam
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull

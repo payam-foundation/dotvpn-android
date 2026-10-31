@@ -1,4 +1,4 @@
-package org.dotvpn.android
+package dot.vpn.payam
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -140,7 +140,7 @@ class DotvpnService : VpnService() {
     }
 
     companion object {
-        const val ACTION_STOP = "org.dotvpn.android.STOP"
+        const val ACTION_STOP = "dot.vpn.payam.STOP"
         const val MTU = 1380
         private const val CHANNEL = "vpn"
         private const val NOTIF_ID = 1

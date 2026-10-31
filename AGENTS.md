@@ -1,6 +1,6 @@
 # dotvpn-android
 
-Native Android app (Kotlin, Jetpack Compose, minSdk 26) around the Go client. Package `org.dotvpn.android`. Depends on `dotvpn-client` (the `mobile` package, built with gomobile into `app/libs/dotvpn.aar`) and, through it, `dotvpn-wire`.
+Native Android app (Kotlin, Jetpack Compose, minSdk 26) around the Go client. Package `dot.vpn.payam`. Depends on `dotvpn-client` (the `mobile` package, built with gomobile into `app/libs/dotvpn.aar`) and, through it, `dotvpn-wire`.
 
 ## Commands
 

@@ -1,4 +1,4 @@
-package org.dotvpn.android
+package dot.vpn.payam
 
 import android.content.Context
 

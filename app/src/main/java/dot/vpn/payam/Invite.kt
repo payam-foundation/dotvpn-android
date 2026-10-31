@@ -1,4 +1,4 @@
-package org.dotvpn.android
+package dot.vpn.payam
 
 private val invitePattern = Regex("""dotvpn://[A-Za-z0-9_-]+""")
 

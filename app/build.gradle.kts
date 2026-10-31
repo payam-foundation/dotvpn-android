@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "org.dotvpn.android"
+    namespace = "dot.vpn.payam"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "org.dotvpn.android"
+        applicationId = "dot.vpn.payam"
         minSdk = 26
         targetSdk = 35
         versionCode = 1

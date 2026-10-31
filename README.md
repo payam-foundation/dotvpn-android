@@ -97,8 +97,8 @@ Live smoke test against a node. Gradle's `connectedDebugAndroidTest` uninstalls 
 ./gradlew assembleDebug assembleDebugAndroidTest
 adb install -r -g app/build/outputs/apk/debug/app-debug.apk
 adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
-adb shell appops set org.dotvpn.android ACTIVATE_VPN allow
-adb shell am instrument -w -e invite 'dotvpn://...' org.dotvpn.android.test/androidx.test.runner.AndroidJUnitRunner
+adb shell appops set dot.vpn.payam ACTIVATE_VPN allow
+adb shell am instrument -w -e invite 'dotvpn://...' dot.vpn.payam.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
 It connects, fetches `generate_204` over HTTPS and resolves a name over UDP through the tunnel. The AAR needs `-checklinkname=0`; the reason is in the ADR.

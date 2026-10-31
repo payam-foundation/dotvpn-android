@@ -1,4 +1,4 @@
-package org.dotvpn.android
+package dot.vpn.payam
 
 import android.net.VpnService
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -17,7 +17,7 @@ import org.junit.runner.RunWith
  * Live smoke test against a real node. Run with
  *   -e invite 'dotvpn://...'
  * VPN consent must already be granted on the device
- * (`adb shell appops set org.dotvpn.android ACTIVATE_VPN allow`).
+ * (`adb shell appops set dot.vpn.payam ACTIVATE_VPN allow`).
  * Without an invite it is skipped.
  */
 @RunWith(AndroidJUnit4::class)
