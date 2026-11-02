@@ -26,3 +26,7 @@ Needs JDK 17, Android SDK platform 35, NDK r26+, gomobile. Sibling repos live ne
 ## Docs
 
 `docs/adr/019-android-shell.md`. Architecture and ADR index: `../dotvpn-lab/docs/`.
+
+## Flow
+
+Pull requests only, never push to `main`. PR title is a Conventional Commit, commits are signed off (`git commit -s`), merges are squash-only. Releases come from release-please. See `CONTRIBUTING.md`.

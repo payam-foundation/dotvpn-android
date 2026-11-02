@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -17,17 +21,11 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
-      # The Go client and wire live in sibling repos; CI checks them out next
-      # to this one, as in local development.
+      # The Go client lives in a sibling repo; CI checks it out next to this one.
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: payam-foundation/dotvpn-client
           path: dotvpn-client
-          persist-credentials: false
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          repository: payam-foundation/dotvpn-wire
-          path: dotvpn-wire
           persist-credentials: false
       - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
         with:
@@ -43,7 +41,6 @@ jobs:
       - run: go install golang.org/x/mobile/cmd/gomobile@latest && gomobile init
       - name: go side
         run: |
-          # Local replace points at ../dotvpn-wire; layout above satisfies it.
           make vet CLIENT=$GITHUB_WORKSPACE/dotvpn-client
       - name: app
         env:
@@ -66,11 +63,6 @@ jobs:
         with:
           repository: payam-foundation/dotvpn-client
           path: dotvpn-client
-          persist-credentials: false
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          repository: payam-foundation/dotvpn-wire
-          path: dotvpn-wire
           persist-credentials: false
       - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
         with:
@@ -103,4 +95,5 @@ jobs:
           rm -f "$DOTVPN_KEYSTORE"
       - env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dotvpn.apk checksums.txt checksums.txt.sigstore.json --generate-notes
+        # release-please already created the release; attach the signed artifacts.
+        run: gh release upload "$GITHUB_REF_NAME" dotvpn.apk checksums.txt checksums.txt.sigstore.json --clobber

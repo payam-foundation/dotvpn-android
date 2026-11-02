@@ -4,6 +4,8 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+val appVersion = "0.1.0" // x-release-please-version
+
 android {
     namespace = "dot.vpn.payam"
     compileSdk = 35
@@ -12,8 +14,9 @@ android {
         applicationId = "dot.vpn.payam"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        // MAJOR*10000 + MINOR*100 + PATCH, so every release raises it.
+        versionCode = appVersion.split(".").map(String::toInt).let { (a, b, c) -> a * 10000 + b * 100 + c }
+        versionName = appVersion
         // The Go library ships arm64 and x86_64 only (see Makefile).
         ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
