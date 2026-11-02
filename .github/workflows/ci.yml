@@ -27,7 +27,7 @@ jobs:
           repository: payam-foundation/dotvpn-client
           path: dotvpn-client
           persist-credentials: false
-      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version-file: dotvpn-client/go.mod
       - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
@@ -64,7 +64,7 @@ jobs:
           repository: payam-foundation/dotvpn-client
           path: dotvpn-client
           persist-credentials: false
-      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version-file: dotvpn-client/go.mod
       - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
