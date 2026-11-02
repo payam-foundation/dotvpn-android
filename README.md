@@ -26,16 +26,19 @@ Android owns the device, routes and DNS; Go only reads and writes packets on the
 
 ```mermaid
 flowchart LR
-    ui["Compose UI: status, invite, split tunnel"]
-    svc["Foreground VpnService: TUN device, routes, DNS, protect()"]
-    aar["gomobile AAR: dotvpn-client/mobile"]
-    engine["Go engine: gVisor stack, fallback ladder"]
-    server["dotvpn-relay or dotvpn-core node"]
+    ui["Compose UI<br/>status, invite, split tunnel"]
+    svc["Foreground VpnService<br/>TUN device, routes, DNS"]
+    engine["Go engine, gomobile AAR<br/>dotvpn-client/mobile: gVisor stack, fallback ladder"]
+    server(["dotvpn-relay or dotvpn-core node"])
 
-    ui --> svc
-    svc -->|"TUN file descriptor and Protector"| aar
-    aar --> engine
-    engine -->|"protected sockets, carriers"| server
+    ui -->|"connect, settings"| svc
+    svc -->|"TUN fd + protect()"| engine
+    engine -->|"protected sockets"| server
+
+    classDef focal fill:#fdf0ea,stroke:#eb6c36,color:#2d3142
+    classDef ext fill:#f5f5f5,stroke:#7a8399,stroke-dasharray:4 3,color:#2d3142
+    class svc focal
+    class server ext
 ```
 
 Design: [ADR-019](docs/adr/019-android-shell.md).
