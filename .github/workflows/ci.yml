@@ -76,7 +76,7 @@ jobs:
           packages: ""
       - run: sdkmanager "platforms;android-37.0" "build-tools;37.0.0" "ndk;26.3.11579264"
       - run: go install golang.org/x/mobile/cmd/gomobile@latest && gomobile init
-      - uses: sigstore/cosign-installer@398d4b0eeef1380460a10c8013a76f728fb906ac # v3
+      - uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
       # Keystore comes from a secret and lives only in the runner's temp dir.
       - name: sign and build
         env:
