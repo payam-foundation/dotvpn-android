@@ -12,7 +12,7 @@ make test     # JVM unit tests
 make release  # signed with DOTVPN_KEYSTORE* env vars (CI secrets)
 ```
 
-Needs JDK 17, Android SDK platform 35, NDK r26+, gomobile. Sibling repos live next to this one.
+Needs JDK 17, Android SDK platform 37, NDK r26+, gomobile. Sibling repos live next to this one.
 
 ## Invariants
 
