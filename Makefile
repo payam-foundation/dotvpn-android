@@ -1,5 +1,5 @@
 # Needs: Go (same version as ../dotvpn-client/go.mod), gomobile, JDK 17,
-# ANDROID_HOME with platform 35 + build-tools, ANDROID_NDK_HOME (r26+).
+# ANDROID_HOME with platform 37 + build-tools, ANDROID_NDK_HOME (r26+).
 CLIENT ?= ../dotvpn-client
 AAR    := app/libs/dotvpn.aar
 

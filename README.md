@@ -83,7 +83,7 @@ Install the new APK over the old one. To roll back, install the previous APK ove
 
 ## Development
 
-Requirements: Go (the version in `../dotvpn-client/go.mod`), JDK 17, Android SDK platform 35 with build-tools, NDK r26 or newer, and gomobile:
+Requirements: Go (the version in `../dotvpn-client/go.mod`), JDK 17, Android SDK platform 37 with build-tools, NDK r26 or newer, and gomobile:
 
 ```sh
 go install golang.org/x/mobile/cmd/gomobile@latest && gomobile init
