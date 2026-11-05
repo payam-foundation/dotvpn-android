@@ -48,7 +48,7 @@ class DotvpnService : VpnService() {
             stop()
             return
         }
-        startForegroundCompat()
+        startForegroundCompat(getString(R.string.status_connecting))
         // Start returns once the engine runs; a second call while running errors.
         try {
             Mobile.stop()
@@ -66,6 +66,9 @@ class DotvpnService : VpnService() {
         poll = scope.launch {
             while (isActive) {
                 val s = parseStatus(Mobile.status())
+                if (s != state.value && s is VpnState.Connected) {
+                    notify(getString(R.string.notif_connected, s.carrier))
+                }
                 state.value = s
                 if (s is VpnState.Failed) {
                     stop()
@@ -114,24 +117,32 @@ class DotvpnService : VpnService() {
         super.onDestroy()
     }
 
-    private fun startForegroundCompat() {
-        val nm = getSystemService(NotificationManager::class.java)
-        nm.createNotificationChannel(
-            NotificationChannel(CHANNEL, getString(R.string.notif_channel), NotificationManager.IMPORTANCE_LOW),
-        )
+    private fun notification(text: String): Notification {
         val open = PendingIntent.getActivity(
             this, 0, Intent(this, MainActivity::class.java), PendingIntent.FLAG_IMMUTABLE,
         )
         val stop = PendingIntent.getService(
             this, 1, Intent(this, DotvpnService::class.java).setAction(ACTION_STOP), PendingIntent.FLAG_IMMUTABLE,
         )
-        val n: Notification = NotificationCompat.Builder(this, CHANNEL)
+        return NotificationCompat.Builder(this, CHANNEL)
             .setSmallIcon(R.drawable.ic_notification)
-            .setContentTitle(getString(R.string.notif_title))
+            .setContentTitle(text)
             .setContentIntent(open)
             .addAction(0, getString(R.string.notif_stop), stop)
             .setOngoing(true)
             .build()
+    }
+
+    private fun notify(text: String) {
+        getSystemService(NotificationManager::class.java).notify(NOTIF_ID, notification(text))
+    }
+
+    private fun startForegroundCompat(text: String) {
+        val nm = getSystemService(NotificationManager::class.java)
+        nm.createNotificationChannel(
+            NotificationChannel(CHANNEL, getString(R.string.notif_channel), NotificationManager.IMPORTANCE_LOW),
+        )
+        val n = notification(text)
         if (Build.VERSION.SDK_INT >= 34) {
             startForeground(NOTIF_ID, n, ServiceInfo.FOREGROUND_SERVICE_TYPE_SYSTEM_EXEMPTED)
         } else {
