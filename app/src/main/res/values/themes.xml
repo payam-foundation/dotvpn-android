@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Window background matches the Compose surface so there is no flash on launch. -->
+    <style name="Theme.DotVpn" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/dotvpn_bg_light</item>
+    </style>
+</resources>

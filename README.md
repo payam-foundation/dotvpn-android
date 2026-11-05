@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/readme-header-dark.svg">
+  <img alt="Dot VPN" src=".github/readme-header-light.svg">
+</picture>
+
 # dotvpn-android
 
 [![CI](https://github.com/payam-foundation/dotvpn-android/actions/workflows/ci.yml/badge.svg)](https://github.com/payam-foundation/dotvpn-android/actions/workflows/ci.yml)
@@ -5,7 +10,7 @@
 [![Status: beta](https://img.shields.io/badge/status-beta-orange)](#status)
 [![License: PolyForm Noncommercial](https://img.shields.io/badge/license-PolyForm%20Noncommercial-blue)](LICENSE)
 
-The Android app of [dotvpn](https://github.com/payam-foundation/dotvpn-wire#related-repositories). Kotlin and Jetpack Compose, minSdk 26, English and Persian (RTL). The tunnel logic is the same Go client as on desktop, bound with gomobile.
+The Android app of [Dot VPN](https://github.com/payam-foundation/dotvpn-wire#related-repositories). Kotlin and Jetpack Compose, minSdk 26, English and Persian (RTL). The tunnel logic is the same Go client as on desktop, bound with gomobile.
 
 ## Status
 
