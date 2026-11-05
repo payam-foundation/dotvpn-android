@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">dotvpn</string>
+    <string name="app_name">Dot VPN</string>
     <string name="status_off">Not connected</string>
-    <string name="status_connecting">Connecting…</string>
+    <string name="status_connecting">Connecting</string>
     <string name="status_connected">Connected</string>
-    <string name="status_error">Connection failed: %1$s</string>
-    <string name="carrier">Carrier: %1$s</string>
+    <string name="status_failed">Couldn\'t connect</string>
+    <string name="failed_next">Tap Connect to try again.</string>
+    <string name="details">Details</string>
     <string name="connect">Connect</string>
     <string name="disconnect">Disconnect</string>
+    <string name="cancel">Cancel</string>
     <string name="no_invite">Add an invite to begin</string>
     <string name="paste_invite">Paste invite</string>
     <string name="scan_qr">Scan QR</string>
-    <string name="invite_bad">That invite is not valid</string>
+    <string name="invite_bad">This invite link isn\'t valid. Ask the operator for a new one.</string>
     <string name="invite_saved">Invite saved</string>
     <string name="servers">Servers</string>
     <string name="split_tunnel">Apps</string>
@@ -21,7 +23,8 @@
     <string name="done">Done</string>
     <string name="always_on">Always-on VPN settings</string>
     <string name="always_on_hint">For a kill switch turn on Always-on VPN and Block connections without VPN.</string>
+    <string name="limits">Dot VPN hides that you use a VPN. It does not hide that you use the internet.</string>
     <string name="notif_channel">VPN status</string>
-    <string name="notif_title">dotvpn is running</string>
+    <string name="notif_connected">Connected · %1$s</string>
     <string name="notif_stop">Disconnect</string>
 </resources>
