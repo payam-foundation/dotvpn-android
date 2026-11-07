@@ -3,7 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-val appVersion = "0.1.0" // x-release-please-version
+val appVersion = "0.2.0" // x-release-please-version
 
 android {
     namespace = "dot.vpn.payam"
