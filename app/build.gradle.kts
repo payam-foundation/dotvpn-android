@@ -16,6 +16,8 @@ android {
         // MAJOR*10000 + MINOR*100 + PATCH, so every release raises it.
         versionCode = appVersion.split(".").map(String::toInt).let { (a, b, c) -> a * 10000 + b * 100 + c }
         versionName = appVersion
+        // Release CI may inject SENTRY_DSN_ANDROID; empty keeps crash reporting no-op.
+        buildConfigField("String", "SENTRY_DSN", "\"${System.getenv("SENTRY_DSN_ANDROID") ?: ""}\"")
         // The Go library ships arm64 and x86_64 only (see Makefile).
         ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -48,7 +50,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    buildFeatures { compose = true }
+    buildFeatures {
+        compose = true
+        buildConfig = true
+    }
     packaging {
         // Go's shared object must stay uncompressed and aligned for fast load.
         jniLibs.useLegacyPackaging = false
@@ -67,6 +72,7 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     // ML Kit code scanner: no camera permission, falls back to paste.
     implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
+    implementation("io.sentry:sentry-android:7.22.4")
 
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")

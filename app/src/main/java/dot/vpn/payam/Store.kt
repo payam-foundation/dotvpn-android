@@ -28,6 +28,11 @@ class Store(private val ctx: Context) {
         get() = prefs.getStringSet("split_apps", emptySet())!!.toSet()
         set(v) = prefs.edit().putStringSet("split_apps", v).apply()
 
+    /** Opt-in crash reporting (Sentry dv-android). Off by default. */
+    var crashReporting: Boolean
+        get() = prefs.getBoolean("crash_reporting", false)
+        set(v) = prefs.edit().putBoolean("crash_reporting", v).apply()
+
     /** Directory for state.json and the server list cache. */
     val dataDir: String get() = ctx.filesDir.absolutePath
 }

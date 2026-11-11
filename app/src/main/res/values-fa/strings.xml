@@ -23,6 +23,10 @@
     <string name="done">تمام</string>
     <string name="always_on">تنظیمات VPN همیشه روشن</string>
     <string name="always_on_hint">برای قطع‌کن اضطراری، «VPN همیشه روشن» و «مسدود کردن اتصال‌های بدون VPN» را فعال کنید.</string>
+    <string name="crash_reporting">اشتراک گزارش خرابی (اختیاری)</string>
+    <string name="send_diagnostics">ارسال گزارش تشخیصی</string>
+    <string name="report_sent">گزارش ارسال شد یا در مرورگر باز شد.</string>
+    <string name="report_failed">ارسال گزارش ممکن نشد.</string>
     <string name="limits">Dot VPN پنهان می‌کند که از VPN استفاده می‌کنید، نه اینکه از اینترنت استفاده می‌کنید.</string>
     <string name="notif_channel">وضعیت VPN</string>
     <string name="notif_connected">متصل · %1$s</string>

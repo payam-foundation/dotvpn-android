@@ -43,10 +43,16 @@ class DotvpnService : VpnService() {
 
     private fun connect() {
         val store = Store(this)
-        val cfg = store.config
+        var cfg = store.config
         if (cfg == null) {
             stop()
             return
+        }
+        runCatching { Mobile.normalizeConfig(cfg) }.getOrNull()?.let { normalized ->
+            if (normalized != cfg) {
+                store.config = normalized
+                cfg = normalized
+            }
         }
         startForegroundCompat(getString(R.string.status_connecting))
         // Start returns once the engine runs; a second call while running errors.
@@ -57,7 +63,7 @@ class DotvpnService : VpnService() {
                 override fun protect(fd: Long): Boolean = this@DotvpnService.protect(fd.toInt())
             })
         } catch (e: Exception) {
-            Log.e("dotvpn", "start failed", e)
+            Log.e("pf", "start failed", e)
             stop()
             state.value = VpnState.Failed(e.message ?: "start failed")
             return

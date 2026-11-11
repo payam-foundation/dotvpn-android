@@ -85,6 +85,8 @@ jobs:
           DOTVPN_KEYSTORE_PASSWORD: ${{ secrets.DOTVPN_KEYSTORE_PASSWORD }}
           DOTVPN_KEY_ALIAS: ${{ secrets.DOTVPN_KEY_ALIAS }}
           DOTVPN_KEY_PASSWORD: ${{ secrets.DOTVPN_KEY_PASSWORD }}
+          # Opt-in crash reporting DSN → BuildConfig.SENTRY_DSN (empty if unset).
+          SENTRY_DSN_ANDROID: ${{ secrets.SENTRY_DSN_ANDROID }}
         run: |
           export DOTVPN_KEYSTORE="$RUNNER_TEMP/release.jks"
           echo "$KS_B64" | base64 -d > "$DOTVPN_KEYSTORE"

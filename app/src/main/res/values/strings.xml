@@ -23,6 +23,10 @@
     <string name="done">Done</string>
     <string name="always_on">Always-on VPN settings</string>
     <string name="always_on_hint">For a kill switch turn on Always-on VPN and Block connections without VPN.</string>
+    <string name="crash_reporting">Share crash reports (optional)</string>
+    <string name="send_diagnostics">Send diagnostics</string>
+    <string name="report_sent">Diagnostics sent or opened in browser.</string>
+    <string name="report_failed">Could not send diagnostics.</string>
     <string name="limits">Dot VPN hides that you use a VPN. It does not hide that you use the internet.</string>
     <string name="notif_channel">VPN status</string>
     <string name="notif_connected">Connected · %1$s</string>

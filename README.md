@@ -23,7 +23,7 @@ Beta. A live smoke test on an arm64 API 34 emulator passes (TCP and UDP through 
 - Per-app split tunnelling.
 - Kill switch through the system's Always-on VPN with "Block connections without VPN".
 - UDP (QUIC, STUN, other resolvers) rides the tunnel when the node advertises it ([ADR-018](https://github.com/payam-foundation/dotvpn-wire/blob/main/docs/adr/018-udp-over-tunnel-streams.md)).
-- No analytics and no crash reporters. Go logs warnings only and persists nothing.
+- No analytics. Crash reporting is opt-in only (off by default; Sentry `dv-android`). Go logs warnings only and persists nothing.
 
 ## How it works
 
@@ -110,6 +110,14 @@ adb shell am instrument -w -e invite 'dotvpn://...' dot.vpn.payam.test/androidx.
 ```
 
 It connects, fetches `generate_204` over HTTPS and resolves a name over UDP through the tunnel. The AAR needs `-checklinkname=0`; the reason is in the ADR.
+
+### Play Console / Data Safety
+
+Optional crash reporting (user toggle, off by default) may send stack traces to
+Sentry EU (`dv-android`). It does not include account keys, invites, traffic
+metadata, or precise location. Diagnostics “Send” uploads a scrubbed bundle via
+the control plane (or opens a GitHub draft offline). Declare optional crash
+logs accordingly in Data Safety.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) first. Report vulnerabilities as described in [SECURITY.md](SECURITY.md).
 

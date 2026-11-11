@@ -45,7 +45,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -96,7 +100,8 @@ class MainActivity : ComponentActivity() {
     private fun importFrom(text: String?) {
         val uri = findInvite(text) ?: return
         try {
-            store.config = Mobile.importInvite(uri)
+            val imported = Mobile.importInvite(uri)
+            store.config = runCatching { Mobile.normalizeConfig(imported) }.getOrDefault(imported)
             invited = true
             message = R.string.invite_saved
         } catch (e: Exception) {
@@ -178,6 +183,42 @@ private fun Home(invited: Boolean, message: Int?, store: Store, onInvite: (Strin
         Text(stringResource(R.string.always_on_hint), style = MaterialTheme.typography.bodyMedium, color = c.fgMuted)
         TextButton(onClick = { ctx.startActivity(Intent(Settings.ACTION_VPN_SETTINGS)) }) {
             Text(stringResource(R.string.always_on))
+        }
+        var crashOn by remember { mutableStateOf(store.crashReporting) }
+        var reportMsg by remember { mutableStateOf<Int?>(null) }
+        val scope = rememberCoroutineScope()
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Checkbox(
+                checked = crashOn,
+                onCheckedChange = { on ->
+                    crashOn = on
+                    store.crashReporting = on
+                    (ctx.applicationContext as? App)?.applyCrashReporting(on)
+                },
+            )
+            Text(stringResource(R.string.crash_reporting), style = MaterialTheme.typography.bodyMedium)
+        }
+        TextButton(onClick = {
+            val cfg = store.config ?: return@TextButton
+            scope.launch {
+                val result = withContext(Dispatchers.IO) {
+                    runCatching { Mobile.reportDiagnostics(cfg, "", "") }
+                }
+                result
+                    .onSuccess { raw ->
+                        reportMsg = R.string.report_sent
+                        val parts = raw.split("|", limit = 2)
+                        val url = parts.getOrNull(0).orEmpty()
+                        val via = parts.getOrNull(1).orEmpty()
+                        if (via == "browser" && url.startsWith("https://")) {
+                            ctx.startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url)))
+                        }
+                    }
+                    .onFailure { reportMsg = R.string.report_failed }
+            }
+        }) { Text(stringResource(R.string.send_diagnostics)) }
+        reportMsg?.let {
+            Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = c.fgMuted)
         }
         Text(stringResource(R.string.limits), style = MaterialTheme.typography.labelSmall, color = c.fgMuted)
     }
