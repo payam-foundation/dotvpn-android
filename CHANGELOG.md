@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/payam-foundation/dotvpn-android/compare/v0.2.0...v0.3.0) (2026-11-13)
+
+
+### Features
+
+* Compose UI, opt-in crash reporting and send-diagnostics ([#17](https://github.com/payam-foundation/dotvpn-android/issues/17)) ([bbbb0a5](https://github.com/payam-foundation/dotvpn-android/commit/bbbb0a51bee261d57fcc84c9f970c26954bae035))
+
 ## [0.2.0](https://github.com/payam-foundation/dotvpn-android/compare/v0.1.0...v0.2.0) (2026-11-07)
 
 
