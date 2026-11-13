@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+
 package dot.vpn.payam
 
 private val invitePattern = Regex("""dv://[A-Za-z0-9_-]+""")

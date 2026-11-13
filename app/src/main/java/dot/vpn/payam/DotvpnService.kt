@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+
 package dot.vpn.payam
 
 import android.app.Notification
@@ -10,7 +12,6 @@ import android.content.pm.ServiceInfo
 import android.net.VpnService
 import android.os.Build
 import android.os.ParcelFileDescriptor
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -74,7 +75,6 @@ class DotvpnService : VpnService() {
                     })
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "start failed", e)
                 stop()
                 state.value = VpnState.Failed(e.message ?: "start failed")
                 return@launch
@@ -181,7 +181,6 @@ class DotvpnService : VpnService() {
         const val MTU = 1380
         private const val CHANNEL = "vpn"
         private const val NOTIF_ID = 1
-        private const val TAG = "dotvpn"
 
         @Volatile private var active: DotvpnService? = null
 

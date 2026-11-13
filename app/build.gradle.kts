@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.plugin.compose")
