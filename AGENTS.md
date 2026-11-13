@@ -16,7 +16,7 @@ Needs JDK 17, Android SDK platform 37, NDK r28+ (for 16 KB page-size–aligned `
 
 ## Invariants
 
-- The Go side never configures the OS. `VpnService` owns the TUN device, routes, DNS and split tunnel; Go reads and writes packets on the descriptor (ADR-019).
+- The Go side never configures the OS. `VpnService` owns the TUN device, routes, DNS and split tunnel; Go reads and writes packets on the descriptor (ADR-025).
 - Every socket the Go client opens goes through `Protector.protect` first, or it loops into the VPN.
 - Kill switch is the system's Always-on VPN with "Block connections without VPN"; the app only links to the setting.
 - No analytics. Crash reporting is opt-in only (off by default; Sentry `dv-android`). No logs persisted. Go logs warnings only. Config holds the account key: `filesDir` only, backups disabled.
@@ -25,7 +25,7 @@ Needs JDK 17, Android SDK platform 37, NDK r28+ (for 16 KB page-size–aligned `
 
 ## Docs
 
-`docs/adr/019-android-shell.md`. Architecture and ADR index: `../dotvpn-lab/docs/`.
+Design notes: README.
 
 ## Flow
 
