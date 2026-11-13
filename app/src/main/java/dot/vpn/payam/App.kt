@@ -31,15 +31,24 @@ class App : Application() {
             options.release = "dv-android@${BuildConfig.VERSION_NAME}"
             options.environment = if (BuildConfig.DEBUG) "dev" else "prod"
             options.setBeforeSend { event, _ ->
-                fun hot(s: String?) =
-                    !s.isNullOrEmpty() &&
-                        (s.contains("dotvpn://", ignoreCase = true) || s.contains("Bearer ", ignoreCase = true))
+                fun hot(s: String?): Boolean {
+                    if (s.isNullOrEmpty()) return false
+                    val t = s.lowercase()
+                    return t.contains("dv://") ||
+                        t.contains("dvr://") ||
+                        t.contains("bearer ") ||
+                        IPV4.containsMatchIn(s) ||
+                        ACCOUNT_KEY.containsMatchIn(s)
+                }
                 if (hot(event.message?.message)) return@setBeforeSend null
                 event.exceptions?.forEach { ex ->
                     if (hot(ex.value)) return@setBeforeSend null
+                    ex.stacktrace?.frames?.forEach { frame ->
+                        if (hot(frame.filename) || hot(frame.function)) return@setBeforeSend null
+                    }
                 }
                 event.breadcrumbs?.forEach { crumb ->
-                    if (hot(crumb.message)) return@setBeforeSend null
+                    if (hot(crumb.message) || hot(crumb.data.toString())) return@setBeforeSend null
                 }
                 event.user = null
                 event.request = null
@@ -47,5 +56,10 @@ class App : Application() {
                 event
             }
         }
+    }
+
+    companion object {
+        private val IPV4 = Regex("""\b\d{1,3}(?:\.\d{1,3}){3}\b""")
+        private val ACCOUNT_KEY = Regex("""\b[A-Za-z0-9_-]{20,}\b""")
     }
 }

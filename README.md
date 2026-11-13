@@ -19,7 +19,7 @@ Beta. A live smoke test on an arm64 API 34 emulator passes (TCP and UDP through 
 ## Features
 
 - One screen: status, connect, active carrier, server list.
-- Invite import by `dotvpn://` link, QR scan or paste.
+- Invite import by `dv://` link, QR scan or paste.
 - Per-app split tunnelling.
 - Kill switch through the system's Always-on VPN with "Block connections without VPN".
 - UDP (QUIC, STUN, other resolvers) rides the tunnel when the node advertises it ([ADR-018](https://github.com/payam-foundation/dotvpn-wire/blob/main/docs/adr/018-udp-over-tunnel-streams.md)).
@@ -83,7 +83,7 @@ Install the new APK over the old one. To roll back, install the previous APK ove
 
 ## Development
 
-Requirements: Go (the version in `../dotvpn-client/go.mod`), JDK 17, Android SDK platform 37 with build-tools, NDK r26 or newer, and gomobile:
+Requirements: Go (the version in `../dotvpn-client/go.mod`), JDK 17, Android SDK platform 37 with build-tools, NDK r28 or newer (r27+ with the Makefile linker flags also works), and gomobile:
 
 ```sh
 go install golang.org/x/mobile/cmd/gomobile@latest && gomobile init
@@ -106,7 +106,7 @@ Live smoke test against a node. Gradle's `connectedDebugAndroidTest` uninstalls 
 adb install -r -g app/build/outputs/apk/debug/app-debug.apk
 adb install -r app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk
 adb shell appops set dot.vpn.payam ACTIVATE_VPN allow
-adb shell am instrument -w -e invite 'dotvpn://...' dot.vpn.payam.test/androidx.test.runner.AndroidJUnitRunner
+adb shell am instrument -w -e invite 'dv://...' dot.vpn.payam.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
 It connects, fetches `generate_204` over HTTPS and resolves a name over UDP through the tunnel. The AAR needs `-checklinkname=0`; the reason is in the ADR.

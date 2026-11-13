@@ -11,3 +11,11 @@ local.properties
 .env
 .kotlin/
 .env.sentry
+.DS_Store
+.idea/
+.vscode/
+.cxx/
+captures/
+go.work
+go.work.sum
+*.pem

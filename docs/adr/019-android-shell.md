@@ -23,6 +23,7 @@ Censored users are mostly on phones. The Go client already has a user-space netw
 
 - The AAR needs `-checklinkname=0`: `github.com/wlynxg/anet` (via the snowflake carrier) links against `net.zoneCache`, which Go 1.23+ restricts. Revisit when anet or pion drops the linkname.
 - AAR carries arm64 and x86_64 only (about 30 MB debug); 32-bit ARM devices are not supported.
+- `libgojni.so` is linked with `-Wl,-z,max-page-size=16384` so LOAD segments are 16 KB–aligned (Android 15+ / Play requirement). That alignment is valid on older 4 KB devices; minSdk stays 26.
 - gVisor on a phone costs CPU and battery. UDP is on by default; measure on device before tuning.
 - Release signing is CI-only; the repo holds no keys.
 
