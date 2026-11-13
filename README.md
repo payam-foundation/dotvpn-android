@@ -22,7 +22,7 @@ Beta. A live smoke test on an arm64 API 34 emulator passes (TCP and UDP through 
 - Invite import by `dv://` link, QR scan or paste.
 - Per-app split tunnelling.
 - Kill switch through the system's Always-on VPN with "Block connections without VPN".
-- UDP (QUIC, STUN, other resolvers) rides the tunnel when the node advertises it ([ADR-018](https://github.com/payam-foundation/dotvpn-wire/blob/main/docs/adr/018-udp-over-tunnel-streams.md)).
+- UDP (QUIC, STUN, other resolvers) rides the tunnel when the node advertises it.
 - No analytics. Crash reporting is opt-in only (off by default; Sentry `dv-android`). Go logs warnings only and persists nothing.
 
 ## How it works
@@ -46,7 +46,7 @@ flowchart LR
     class server ext
 ```
 
-Design: [ADR-019](docs/adr/019-android-shell.md).
+Design: `VpnService` owns the device, routes, DNS and split tunnel; the Go engine only reads and writes packets on the descriptor and protects its own sockets through `Protector`. The kill switch is Android's Always-on VPN with "Block connections without VPN". The AAR carries arm64 and x86_64 only and is linked for 16 KB pages.
 
 ## Install
 
@@ -109,7 +109,7 @@ adb shell appops set dot.vpn.payam ACTIVATE_VPN allow
 adb shell am instrument -w -e invite 'dv://...' dot.vpn.payam.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
-It connects, fetches `generate_204` over HTTPS and resolves a name over UDP through the tunnel. The AAR needs `-checklinkname=0`; the reason is in the ADR.
+It connects, fetches `generate_204` over HTTPS and resolves a name over UDP through the tunnel. The AAR needs `-checklinkname=0` because a transitive dependency links `net.zoneCache`, which Go 1.23+ restricts.
 
 ### Play Console / Data Safety
 
@@ -129,7 +129,7 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) first. Report vulnerabilities as describ
 | [dotvpn-core](https://github.com/payam-foundation/dotvpn-core) | Server: node, control plane |
 | [dotvpn-relay](https://github.com/payam-foundation/dotvpn-relay) | In-country stealth hop |
 | [dotvpn-client](https://github.com/payam-foundation/dotvpn-client) | Client library, `dotvpn` CLI, gomobile surface |
-| [dotvpn-lab](https://github.com/payam-foundation/dotvpn-lab) | Censorship lab, architecture and ADR index |
+| [dotvpn-lab](https://github.com/payam-foundation/dotvpn-lab) | Censorship lab and black-box tests |
 
 ## License
 

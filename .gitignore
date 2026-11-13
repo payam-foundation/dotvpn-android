@@ -19,3 +19,8 @@ captures/
 go.work
 go.work.sum
 *.pem
+.env.*
+coverage.out
+.vitest/
+!.env.example
+!.env.*.example
