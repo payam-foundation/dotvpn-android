@@ -15,12 +15,15 @@ Censored users are mostly on phones. The Go client already has a user-space netw
 - Kill switch is the system's Always-on VPN with "Block connections without VPN". The Go `kill_switch` option is ignored on Android with a warning.
 - Build tags: `sys_linux.go` is `linux && !android`; `sys_android.go` supplies no-op OS hooks and `DeviceFromFD`. The shared engine construction lives in `internal/app`, used by the CLI and `mobile`.
 - The engine reconnects in the background (`keepConnected`) so airplane-mode and network switches recover without a new flow; the last working endpoint is persisted in app storage (`state.json`).
-- No analytics or crash reporters; Go logs warnings only, nothing is persisted.
+- No analytics. Crash reporting is **opt-in only** (off by default) to Sentry
+  project `dv-android` (see client ADR-022); Go logs warnings only; no log ring
+  persisted on disk.
 
 ## Consequences
 
 - The AAR needs `-checklinkname=0`: `github.com/wlynxg/anet` (via the snowflake carrier) links against `net.zoneCache`, which Go 1.23+ restricts. Revisit when anet or pion drops the linkname.
 - AAR carries arm64 and x86_64 only (about 30 MB debug); 32-bit ARM devices are not supported.
+- `libgojni.so` is linked with `-Wl,-z,max-page-size=16384` so LOAD segments are 16 KB–aligned (Android 15+ / Play requirement). That alignment is valid on older 4 KB devices; minSdk stays 26.
 - gVisor on a phone costs CPU and battery. UDP is on by default; measure on device before tuning.
 - Release signing is CI-only; the repo holds no keys.
 

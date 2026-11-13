@@ -37,15 +37,15 @@ jobs:
       - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
         with:
           packages: ""
-      - run: sdkmanager "platforms;android-37.0" "build-tools;37.0.0" "ndk;26.3.11579264"
+      - run: sdkmanager "platforms;android-37.0" "build-tools;37.0.0" "ndk;28.2.13676358"
       - run: go install golang.org/x/mobile/cmd/gomobile@latest && gomobile init
       - name: go side
         run: |
           make vet CLIENT=$GITHUB_WORKSPACE/dotvpn-client
       - name: app
         env:
-          ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/26.3.11579264
-        run: make apk CLIENT=$GITHUB_WORKSPACE/dotvpn-client && ./gradlew --no-daemon testDebugUnitTest
+          ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/28.2.13676358
+        run: make apk check-16kb CLIENT=$GITHUB_WORKSPACE/dotvpn-client && ./gradlew --no-daemon testDebugUnitTest
 
   release:
     needs: [build]
@@ -74,17 +74,19 @@ jobs:
       - uses: android-actions/setup-android@be39fa834029ff78f1a44aa3bb0819b8fc2bd8fd # v4.0.4
         with:
           packages: ""
-      - run: sdkmanager "platforms;android-37.0" "build-tools;37.0.0" "ndk;26.3.11579264"
+      - run: sdkmanager "platforms;android-37.0" "build-tools;37.0.0" "ndk;28.2.13676358"
       - run: go install golang.org/x/mobile/cmd/gomobile@latest && gomobile init
       - uses: sigstore/cosign-installer@756fe2d284c7292c4e9b62c8a28f1e5629c59532 # v4.1.3
       # Keystore comes from a secret and lives only in the runner's temp dir.
       - name: sign and build
         env:
-          ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/26.3.11579264
+          ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/28.2.13676358
           KS_B64: ${{ secrets.DOTVPN_KEYSTORE_B64 }}
           DOTVPN_KEYSTORE_PASSWORD: ${{ secrets.DOTVPN_KEYSTORE_PASSWORD }}
           DOTVPN_KEY_ALIAS: ${{ secrets.DOTVPN_KEY_ALIAS }}
           DOTVPN_KEY_PASSWORD: ${{ secrets.DOTVPN_KEY_PASSWORD }}
+          # Opt-in crash reporting DSN → BuildConfig.SENTRY_DSN (empty if unset).
+          SENTRY_DSN_ANDROID: ${{ secrets.SENTRY_DSN_ANDROID }}
         run: |
           export DOTVPN_KEYSTORE="$RUNNER_TEMP/release.jks"
           echo "$KS_B64" | base64 -d > "$DOTVPN_KEYSTORE"

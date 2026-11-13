@@ -9,8 +9,8 @@ import android.content.Intent
 import android.content.pm.ServiceInfo
 import android.net.VpnService
 import android.os.Build
-import android.util.Log
 import android.os.ParcelFileDescriptor
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,6 +21,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import mobile.Mobile
 import mobile.Protector
 
@@ -32,49 +33,69 @@ import mobile.Protector
 class DotvpnService : VpnService() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private var poll: Job? = null
+    private var startJob: Job? = null
+
+    override fun onCreate() {
+        super.onCreate()
+        active = this
+    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_STOP -> stop()
-            else -> connect()
+            else -> connectAsync()
         }
         return START_NOT_STICKY
     }
 
-    private fun connect() {
-        val store = Store(this)
-        val cfg = store.config
-        if (cfg == null) {
-            stop()
-            return
-        }
-        startForegroundCompat(getString(R.string.status_connecting))
-        // Start returns once the engine runs; a second call while running errors.
-        try {
-            Mobile.stop()
-            val pfd = build(store) ?: throw IllegalStateException("VPN permission revoked")
-            Mobile.start(cfg, store.dataDir, pfd.detachFd().toLong(), object : Protector {
-                override fun protect(fd: Long): Boolean = this@DotvpnService.protect(fd.toInt())
-            })
-        } catch (e: Exception) {
-            Log.e("dotvpn", "start failed", e)
-            stop()
-            state.value = VpnState.Failed(e.message ?: "start failed")
-            return
-        }
-        poll?.cancel()
-        poll = scope.launch {
-            while (isActive) {
-                val s = parseStatus(Mobile.status())
-                if (s != state.value && s is VpnState.Connected) {
-                    notify(getString(R.string.notif_connected, s.carrier))
+    private fun connectAsync() {
+        startJob?.cancel()
+        startJob = scope.launch {
+            val store = Store(this@DotvpnService)
+            var cfg = store.config
+            if (cfg == null) {
+                stop()
+                return@launch
+            }
+            runCatching { Mobile.normalizeConfig(cfg) }.getOrNull()?.let { normalized ->
+                if (normalized != cfg) {
+                    store.config = normalized
+                    cfg = normalized
                 }
-                state.value = s
-                if (s is VpnState.Failed) {
-                    stop()
-                    return@launch
+            }
+            startForegroundCompat(getString(R.string.status_connecting))
+            state.value = VpnState.Connecting
+            try {
+                withContext(Dispatchers.IO) {
+                    Mobile.stop()
+                    val pfd = build(store) ?: throw IllegalStateException("VPN permission revoked")
+                    Mobile.start(cfg, store.dataDir, pfd.detachFd().toLong(), object : Protector {
+                        override fun protect(fd: Long): Boolean = this@DotvpnService.protect(fd.toInt())
+                    })
                 }
-                delay(1000)
+            } catch (e: Exception) {
+                Log.e(TAG, "start failed", e)
+                stop()
+                state.value = VpnState.Failed(e.message ?: "start failed")
+                return@launch
+            }
+            poll?.cancel()
+            poll = scope.launch {
+                var lastConnected: VpnState.Connected? = null
+                while (isActive) {
+                    val s = parseStatus(Mobile.status())
+                    if (s is VpnState.Connected && s != lastConnected) {
+                        notify(getString(R.string.notif_connected, s.carrier))
+                        lastConnected = s
+                    }
+                    state.value = s
+                    if (s is VpnState.Failed) {
+                        stop()
+                        return@launch
+                    }
+                    // Slower poll while connected to save battery; faster while connecting.
+                    delay(if (s is VpnState.Connected) 2_500 else 1_000)
+                }
             }
         }
     }
@@ -90,7 +111,9 @@ class DotvpnService : VpnService() {
             .addAddress("fd00:198:18::1", 128)
             .addRoute("::", 0)
             .setBlocking(false)
-        // Apps must exist on the device or addAllowed/DisallowedApplication throws.
+        if (Build.VERSION.SDK_INT >= 29) {
+            b.setMetered(false)
+        }
         val apps = store.splitApps.filter { runCatching { packageManager.getPackageInfo(it, 0) }.isSuccess }
         when (store.splitMode) {
             SplitMode.ALL -> Unit
@@ -101,8 +124,9 @@ class DotvpnService : VpnService() {
     }
 
     private fun stop() {
+        startJob?.cancel()
         poll?.cancel()
-        Mobile.stop()
+        scope.launch(Dispatchers.IO) { Mobile.stop() }
         state.value = parseStatus(Mobile.status()).let { if (it is VpnState.Failed) it else VpnState.Off }
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
@@ -111,6 +135,8 @@ class DotvpnService : VpnService() {
     override fun onRevoke() = stop()
 
     override fun onDestroy() {
+        if (active === this) active = null
+        startJob?.cancel()
         poll?.cancel()
         Mobile.stop()
         scope.coroutineContext[Job]?.cancel()
@@ -155,9 +181,15 @@ class DotvpnService : VpnService() {
         const val MTU = 1380
         private const val CHANNEL = "vpn"
         private const val NOTIF_ID = 1
+        private const val TAG = "dotvpn"
+
+        @Volatile private var active: DotvpnService? = null
 
         private val state = MutableStateFlow<VpnState>(VpnState.Off)
         val status: StateFlow<VpnState> get() = state
+
+        /** Protect a socket when the VPN is up; no-op (true) when it is not. */
+        fun protectFd(fd: Long): Boolean = active?.protect(fd.toInt()) ?: true
 
         fun start(ctx: Context) {
             ctx.startForegroundService(Intent(ctx, DotvpnService::class.java))
