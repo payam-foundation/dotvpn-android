@@ -153,6 +153,8 @@
     <string name="lang_en">English</string>
     <string name="lang_fa">فارسی</string>
     <string name="settings_dns_preset">حل‌کننده DNS</string>
+    <string name="settings_shaping">پنهان‌سازی اندازه ترافیک</string>
+    <string name="settings_shaping_hint">ترافیک رله را به اندازه‌های ثابت پر می‌کند. داده بیشتری مصرف می‌شود.</string>
     <string name="settings_doh">DNS روی HTTPS</string>
     <string name="settings_doh_hint">فقط برای جستجوهای عبور مستقیم و ECH.</string>
     <string name="dns_cloudflare">Cloudflare (1.1.1.1)</string>

@@ -153,6 +153,8 @@
     <string name="lang_en">English</string>
     <string name="lang_fa">فارسی</string>
     <string name="settings_dns_preset">Resolver</string>
+    <string name="settings_shaping">Hide traffic sizes</string>
+    <string name="settings_shaping_hint">Pads relay traffic to fixed sizes. Uses more data.</string>
     <string name="settings_doh">DNS over HTTPS</string>
     <string name="settings_doh_hint">For bypass and ECH lookups only.</string>
     <string name="dns_cloudflare">Cloudflare (1.1.1.1)</string>

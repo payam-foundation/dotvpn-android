@@ -265,6 +265,18 @@ fun SettingsScreen(
                                 },
                             )
                         }
+                        DotCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp)) {
+                            SettingToggleRow(
+                                title = stringResource(R.string.settings_shaping),
+                                hint = stringResource(R.string.settings_shaping_hint),
+                                checked = settings.shaping,
+                                enabled = settings.useRelays,
+                                onCheckedChange = {
+                                    settings = settings.copy(shaping = it)
+                                    persist(settingsPatch(shaping = it))
+                                },
+                            )
+                        }
                         DotCard {
                             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
