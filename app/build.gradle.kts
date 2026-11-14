@@ -67,7 +67,7 @@ dependencies {
     implementation(files("libs/dotvpn.aar"))
 
     implementation("androidx.core:core-ktx:1.19.1")
-    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation("androidx.core:core-splashscreen:1.2.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.11.0")
     implementation("androidx.activity:activity-compose:1.9.3")
     implementation(platform("androidx.compose:compose-bom:2026.09.00"))
@@ -77,8 +77,8 @@ dependencies {
     implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
     implementation("io.sentry:sentry-android:7.22.4")
-    implementation("io.coil-kt.coil3:coil-compose:3.3.0")
-    implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
+    implementation("io.coil-kt.coil3:coil-compose:3.6.3")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.6.3")
 
     testImplementation("junit:junit:4.13.2")
     // JVM unit tests: Android's org.json is not on the classpath.
