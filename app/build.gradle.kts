@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-val appVersion = "0.3.0" // x-release-please-version
+val appVersion = "0.4.0" // x-release-please-version
 
 android {
     namespace = "dot.vpn.payam"
@@ -74,13 +76,13 @@ dependencies {
     // ML Kit: GmsBarcodeScanning (camera) + BarcodeScanning (gallery bitmap).
     implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
-    implementation("io.sentry:sentry-android:7.22.4")
+    implementation("io.sentry:sentry-android:8.63.0")
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
 
     testImplementation("junit:junit:4.13.2")
     // JVM unit tests: Android's org.json is not on the classpath.
-    testImplementation("org.json:json:20240303")
+    testImplementation("org.json:json:20260814")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test:runner:1.6.2")
 }

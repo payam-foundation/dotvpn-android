@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+
 package dot.vpn.payam
 
 /** What the Go side reports through Mobile.status(). */

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+
 package dot.vpn.payam
 
 import android.app.Notification
@@ -7,10 +9,13 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.net.VpnService
 import android.os.Build
 import android.os.ParcelFileDescriptor
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +39,7 @@ class DotvpnService : VpnService() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private var poll: Job? = null
     private var startJob: Job? = null
+    private var netCallback: ConnectivityManager.NetworkCallback? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -74,11 +80,11 @@ class DotvpnService : VpnService() {
                     })
                 }
             } catch (e: Exception) {
-                Log.e(TAG, "start failed", e)
                 stop()
                 state.value = VpnState.Failed(e.message ?: "start failed")
                 return@launch
             }
+            watchNetwork()
             poll?.cancel()
             poll = scope.launch {
                 var lastConnected: VpnState.Connected? = null
@@ -98,6 +104,35 @@ class DotvpnService : VpnService() {
                 }
             }
         }
+    }
+
+    /**
+     * Reports physical network changes to the Go engine and tells Android which
+     * network the VPN rides on. NOT_VPN keeps our own tunnel out of the
+     * request; registerDefaultNetworkCallback would report the VPN itself.
+     */
+    private fun watchNetwork() {
+        unwatchNetwork()
+        val cm = getSystemService(ConnectivityManager::class.java)
+        val tracker = NetworkTracker<Network> {
+            setUnderlyingNetworks(arrayOf(it))
+            scope.launch(Dispatchers.IO) { Mobile.networkChanged() }
+        }
+        val cb = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) = tracker.onAvailable(network)
+            override fun onLost(network: Network) = tracker.onLost(network)
+        }
+        val req = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN)
+            .build()
+        cm.registerNetworkCallback(req, cb)
+        netCallback = cb
+    }
+
+    private fun unwatchNetwork() {
+        netCallback?.let { runCatching { getSystemService(ConnectivityManager::class.java).unregisterNetworkCallback(it) } }
+        netCallback = null
     }
 
     /** Fake DNS lives at 198.18.0.2 inside the Go stack; IPv6 goes to a blackhole. */
@@ -126,6 +161,7 @@ class DotvpnService : VpnService() {
     private fun stop() {
         startJob?.cancel()
         poll?.cancel()
+        unwatchNetwork()
         scope.launch(Dispatchers.IO) { Mobile.stop() }
         state.value = parseStatus(Mobile.status()).let { if (it is VpnState.Failed) it else VpnState.Off }
         stopForeground(STOP_FOREGROUND_REMOVE)
@@ -138,6 +174,7 @@ class DotvpnService : VpnService() {
         if (active === this) active = null
         startJob?.cancel()
         poll?.cancel()
+        unwatchNetwork()
         Mobile.stop()
         scope.coroutineContext[Job]?.cancel()
         super.onDestroy()
@@ -181,7 +218,6 @@ class DotvpnService : VpnService() {
         const val MTU = 1380
         private const val CHANNEL = "vpn"
         private const val NOTIF_ID = 1
-        private const val TAG = "dotvpn"
 
         @Volatile private var active: DotvpnService? = null
 

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+
 package dot.vpn.payam
 
 import android.app.Application
@@ -10,6 +12,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         runCatching { Mobile.setAppVersion(BuildConfig.VERSION_NAME) }
+        sweepReports(this)
         val store = Store(this)
         store.config?.let { raw ->
             runCatching { Mobile.normalizeConfig(raw) }.getOrNull()?.let { normalized ->

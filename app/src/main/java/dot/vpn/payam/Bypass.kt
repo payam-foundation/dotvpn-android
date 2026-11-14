@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+
 package dot.vpn.payam
 
 private val label = Regex("""^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?$""", RegexOption.IGNORE_CASE)

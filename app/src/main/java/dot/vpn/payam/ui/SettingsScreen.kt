@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+
 package dot.vpn.payam.ui
 
 import android.content.Context
@@ -40,7 +42,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
-import dot.vpn.payam.BuildConfig
 import dot.vpn.payam.BypassEntry
 import dot.vpn.payam.ClientSettings
 import dot.vpn.payam.DNS_PRESETS
@@ -93,7 +94,7 @@ fun SettingsScreen(
     var theme by remember { mutableStateOf(store.themePref) }
     var lang by remember { mutableStateOf(store.langPref) }
     var crashOn by remember { mutableStateOf(store.crashReporting) }
-    var reportMsg by remember { mutableStateOf<Int?>(null) }
+    var reportOpen by remember { mutableStateOf(false) }
     var dnsSheet by remember { mutableStateOf(false) }
     var dnsDraft by remember { mutableStateOf("") }
     var bypassDraft by remember { mutableStateOf("") }
@@ -112,19 +113,6 @@ fun SettingsScreen(
                 store.config = applied.first
                 settings = applied.second
             }
-        }
-    }
-
-    fun sendDiagnostics() {
-        val cfg = store.config ?: return
-        scope.launch {
-            runCatching { withContext(Dispatchers.IO) { Mobile.reportDiagnostics(cfg, "", "") } }
-                .onSuccess { raw ->
-                    reportMsg = R.string.report_sent
-                    val (url, via) = raw.split("|", limit = 2).let { it[0] to it.getOrElse(1) { "" } }
-                    if (via == "browser" && url.startsWith("https://")) open(ctx, Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-                }
-                .onFailure { reportMsg = R.string.report_failed }
         }
     }
 
@@ -260,13 +248,8 @@ fun SettingsScreen(
                                     .putExtra(Settings.EXTRA_APP_PACKAGE, ctx.packageName),
                             )
                         }
-                        if (BuildConfig.DEBUG) {
-                            LinkRow(stringResource(R.string.send_diagnostics), stringResource(R.string.report_hint)) {
-                                sendDiagnostics()
-                            }
-                            reportMsg?.let {
-                                Text(stringResource(it), style = MaterialTheme.typography.bodyMedium, color = c.fgMuted)
-                            }
+                        LinkRow(stringResource(R.string.report_title), stringResource(R.string.report_entry_hint)) {
+                            reportOpen = true
                         }
                     }
 
@@ -390,6 +373,8 @@ fun SettingsScreen(
             }
         }
     }
+
+    if (reportOpen) ReportSheet(onDismiss = { reportOpen = false })
 
     if (dnsSheet) {
         DotSheet(title = stringResource(R.string.settings_dns_preset), onDismiss = { dnsSheet = false }) {

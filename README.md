@@ -8,7 +8,7 @@
 [![CI](https://github.com/payam-foundation/dotvpn-android/actions/workflows/ci.yml/badge.svg)](https://github.com/payam-foundation/dotvpn-android/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/payam-foundation/dotvpn-android?include_prereleases)](https://github.com/payam-foundation/dotvpn-android/releases)
 [![Status: beta](https://img.shields.io/badge/status-beta-orange)](#status)
-[![License: PolyForm Noncommercial](https://img.shields.io/badge/license-PolyForm%20Noncommercial-blue)](LICENSE)
+[![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-blue)](LICENSE)
 
 The Android app of [Dot VPN](https://github.com/payam-foundation/dotvpn-wire#related-repositories). Kotlin and Jetpack Compose, minSdk 26, English and Persian (RTL). The tunnel logic is the same Go client as on desktop, bound with gomobile.
 
@@ -50,7 +50,7 @@ Design: `VpnService` owns the device, routes, DNS and split tunnel; the Go engin
 
 ## Install
 
-Download `dotvpn.apk` from the [releases page](https://github.com/payam-foundation/dotvpn-android/releases), [verify it](#verify-a-release), and install it. The licence is not an OSI licence, so the app is not eligible for F-Droid; distribute it as a signed APK or through a store you control.
+Download `dotvpn.apk` from the [releases page](https://github.com/payam-foundation/dotvpn-android/releases), [verify it](#verify-a-release), and install it. The licence is OSI-approved, so the app can be distributed through F-Droid as well as a signed APK.
 
 1. Open the app and paste, scan or open an invite from your server operator.
 2. Tap Connect and accept the system VPN prompt.
@@ -115,9 +115,9 @@ It connects, fetches `generate_204` over HTTPS and resolves a name over UDP thro
 
 Optional crash reporting (user toggle, off by default) may send stack traces to
 Sentry EU (`dv-android`). It does not include account keys, invites, traffic
-metadata, or precise location. Diagnostics “Send” uploads a scrubbed bundle via
-the control plane (or opens a GitHub draft offline). Declare optional crash
-logs accordingly in Data Safety.
+metadata, or precise location. “Report a problem” creates an encrypted file of
+recent scrubbed logs that the user emails to report@dotvpn.org; the app uploads
+nothing itself. Declare optional crash logs accordingly in Data Safety.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md) first. Report vulnerabilities as described in [SECURITY.md](SECURITY.md).
 
@@ -133,4 +133,4 @@ Read [CONTRIBUTING.md](CONTRIBUTING.md) first. Report vulnerabilities as describ
 
 ## License
 
-[PolyForm Noncommercial License 1.0.0](LICENSE). Source-available, not open source: personal, research, educational and non-profit use is permitted; commercial use needs a separate licence from Payam Foundation.
+[GNU AGPL-3.0-only](LICENSE).

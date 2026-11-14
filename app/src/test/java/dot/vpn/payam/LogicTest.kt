@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+
 package dot.vpn.payam
 
 import org.junit.Assert.assertEquals
@@ -159,5 +161,37 @@ class LogicTest {
         assertEquals("DE", dot.vpn.payam.ui.flagCode(" de "))
         assertEquals("", dot.vpn.payam.ui.flagCode("DEU"))
         assertEquals("", dot.vpn.payam.ui.flagEmoji(null))
+    }
+
+    @Test
+    fun reportMailCarriesIdAndArmor() {
+        val m = reportMail("K7MQ2XAB", "ARMOR")
+        assertEquals("report@dotvpn.org", m.to)
+        assertEquals("Support request K7MQ2XAB", m.subject)
+        assertTrue(m.text.contains("K7MQ2XAB") && m.text.contains("ARMOR"))
+        assertEquals("r-K7MQ2XAB.dat", reportFileName("K7MQ2XAB"))
+        assertFalse(reportMail("K7MQ2XAB", "x".repeat(70_000)).text.contains("xxxx"))
+    }
+
+    @Test
+    fun networkTrackerFiresOnlyWhenTheCurrentNetworkChanges() {
+        val fired = mutableListOf<String>()
+        val t = NetworkTracker<String> { fired += it }
+        t.onAvailable("wifi") // baseline
+        t.onAvailable("wifi") // capability churn
+        t.onAvailable("cell") // registration replay of an unused network
+        assertEquals(emptyList<String>(), fired)
+        t.onLost("cell") // an unused network going away
+        t.onAvailable("cell")
+        assertEquals(emptyList<String>(), fired)
+        t.onLost("wifi") // current lost, cell takes over
+        assertEquals(listOf("cell"), fired)
+        t.onLost("cell") // offline: nothing to move to yet
+        assertEquals(listOf("cell"), fired)
+        t.onAvailable("wifi2") // back online
+        assertEquals(listOf("cell", "wifi2"), fired)
+        t.onAvailable("wifi3") // wifi3 joins while wifi2 works
+        t.onLost("wifi2") // roam to the remaining one
+        assertEquals(listOf("cell", "wifi2", "wifi3"), fired)
     }
 }
