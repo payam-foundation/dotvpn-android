@@ -44,7 +44,7 @@ import dot.vpn.payam.ui.theme.DotTheme
 private data class AppRow(val info: ApplicationInfo, val label: String)
 
 @Composable
-internal fun AppsSettingsPanel(store: Store, modifier: Modifier = Modifier) {
+internal fun AppsSettingsPanel(store: Store, onChanged: () -> Unit, modifier: Modifier = Modifier) {
     val ctx = LocalContext.current
     val pm = ctx.packageManager
     val c = DotTheme.colors
@@ -63,6 +63,7 @@ internal fun AppsSettingsPanel(store: Store, modifier: Modifier = Modifier) {
         picked = nextPicked
         store.splitMode = nextMode
         store.splitApps = nextPicked
+        onChanged()
     }
 
     val filtered = remember(apps, query) {
@@ -163,8 +164,6 @@ internal fun AppsSettingsPanel(store: Store, modifier: Modifier = Modifier) {
                 }
             }
         }
-
-        Text(stringResource(R.string.settings_apply_next), style = MaterialTheme.typography.bodySmall, color = c.fgMuted)
     }
 }
 
