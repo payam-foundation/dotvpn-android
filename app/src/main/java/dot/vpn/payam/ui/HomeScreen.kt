@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+
 package dot.vpn.payam.ui
 
 import android.Manifest
@@ -38,6 +40,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -131,6 +134,7 @@ fun HomeScreen(
     var picker by remember { mutableStateOf(false) }
     var localMessage by remember { mutableStateOf<Int?>(null) }
     var crashOn by remember { mutableStateOf(store.crashReporting) }
+    var reportOpen by remember { mutableStateOf(false) }
     val firstRun = remember { !store.setupDone }
     val nodes = remember(probes) { groupNodes(probes) }
     var ip by remember { mutableStateOf<String?>(null) }
@@ -326,6 +330,7 @@ fun HomeScreen(
                         color = c.fgMuted,
                         textAlign = TextAlign.Center,
                     )
+                    TextButton(onClick = { reportOpen = true }) { Text(stringResource(R.string.report_title)) }
                 }
                 shownMessage?.let { MessageLine(it) }
 
@@ -397,6 +402,8 @@ fun HomeScreen(
             }
         }
     }
+
+    if (reportOpen) ReportSheet(onDismiss = { reportOpen = false })
 
     if (picker) {
         DotSheet(title = stringResource(R.string.servers_pick), onDismiss = { picker = false }) {

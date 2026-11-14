@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+
 package dot.vpn.payam.ui
 
 import android.content.ClipData

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: AGPL-3.0-only
+
 package dot.vpn.payam
 
 import android.content.Context
@@ -164,6 +166,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         scope.cancel()
+        sweepReports(this)
         super.onDestroy()
     }
 
