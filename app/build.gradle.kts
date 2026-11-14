@@ -76,7 +76,7 @@ dependencies {
     // ML Kit: GmsBarcodeScanning (camera) + BarcodeScanning (gallery bitmap).
     implementation("com.google.android.gms:play-services-code-scanner:16.1.0")
     implementation("com.google.mlkit:barcode-scanning:17.3.0")
-    implementation("io.sentry:sentry-android:7.22.4")
+    implementation("io.sentry:sentry-android:8.63.0")
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
     implementation("io.coil-kt.coil3:coil-network-okhttp:3.3.0")
 
