@@ -28,6 +28,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -45,11 +46,13 @@ import androidx.compose.ui.unit.dp
 import dot.vpn.payam.BypassEntry
 import dot.vpn.payam.ClientSettings
 import dot.vpn.payam.DNS_PRESETS
+import dot.vpn.payam.DotvpnService
 import dot.vpn.payam.LangPref
 import dot.vpn.payam.R
 import dot.vpn.payam.SELECTABLE_CARRIERS
 import dot.vpn.payam.Store
 import dot.vpn.payam.ThemePref
+import dot.vpn.payam.VpnState
 import dot.vpn.payam.carrierEnabled
 import dot.vpn.payam.parseEntries
 import dot.vpn.payam.parseSettings
@@ -99,6 +102,15 @@ fun SettingsScreen(
     var dnsDraft by remember { mutableStateOf("") }
     var bypassDraft by remember { mutableStateOf("") }
     var bypassErr by remember { mutableStateOf<Int?>(null) }
+    val vpn by DotvpnService.status.collectAsState()
+    var pending by remember { mutableStateOf(false) }
+
+    fun markPending() {
+        if (vpn !is VpnState.Off) pending = true
+    }
+    LaunchedEffect(vpn) {
+        if (vpn is VpnState.Off || vpn is VpnState.Connecting) pending = false
+    }
 
     fun persist(patch: String) {
         scope.launch {
@@ -112,6 +124,7 @@ fun SettingsScreen(
                 } ?: return@withLock
                 store.config = applied.first
                 settings = applied.second
+                markPending()
             }
         }
     }
@@ -174,7 +187,7 @@ fun SettingsScreen(
         }
 
         when (SettingsTab.entries[tab]) {
-            SettingsTab.Apps -> AppsSettingsPanel(store, Modifier.weight(1f))
+            SettingsTab.Apps -> AppsSettingsPanel(store, ::markPending, Modifier.weight(1f))
 
             else -> Column(
                 Modifier.weight(1f).verticalScroll(rememberScrollState()),
@@ -265,6 +278,18 @@ fun SettingsScreen(
                                 },
                             )
                         }
+                        DotCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp)) {
+                            SettingToggleRow(
+                                title = stringResource(R.string.settings_shaping),
+                                hint = stringResource(R.string.settings_shaping_hint),
+                                checked = settings.shaping,
+                                enabled = settings.useRelays,
+                                onCheckedChange = {
+                                    settings = settings.copy(shaping = it)
+                                    persist(settingsPatch(shaping = it))
+                                },
+                            )
+                        }
                         DotCard {
                             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -293,7 +318,6 @@ fun SettingsScreen(
                                 }
                             }
                         }
-                        Text(stringResource(R.string.settings_apply_next), style = MaterialTheme.typography.bodySmall, color = c.fgMuted)
                     }
 
                     SettingsTab.Dns -> {
@@ -321,7 +345,6 @@ fun SettingsScreen(
                                 },
                             )
                         }
-                        Text(stringResource(R.string.settings_apply_next), style = MaterialTheme.typography.bodySmall, color = c.fgMuted)
                     }
 
                     SettingsTab.Bypass -> {
@@ -365,11 +388,16 @@ fun SettingsScreen(
                                 }
                             }
                         }
-                        Text(stringResource(R.string.settings_apply_next), style = MaterialTheme.typography.bodySmall, color = c.fgMuted)
                     }
 
                     SettingsTab.Apps -> Unit
                 }
+            }
+        }
+
+        if (pending) {
+            DotCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)) {
+                Text(stringResource(R.string.settings_apply_next), style = MaterialTheme.typography.bodyMedium, color = c.fgMuted)
             }
         }
     }

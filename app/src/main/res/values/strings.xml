@@ -64,10 +64,10 @@
     <string name="notifications_perm">Notifications</string>
     <string name="notifications_perm_hint">Needed for the VPN status notification while connected.</string>
     <string name="crash_reporting">Send anonymous crash reports</string>
-    <string name="crash_reporting_hint">Sent only when the app crashes. Never includes your traffic, invites, or account keys. May not work where Sentry is blocked.</string>
+    <string name="crash_reporting_hint">Sent only when the app crashes. Never includes your traffic, invites, or account keys.</string>
     <string name="report_title">Report a problem</string>
-    <string name="report_entry_hint">Creates an encrypted file of recent logs to email to the Dot VPN team.</string>
-    <string name="report_hint">Only the Dot VPN team can read the file. Addresses and keys are removed before it is encrypted.</string>
+    <string name="report_entry_hint">Had trouble in the last hour? Send us an encrypted report.</string>
+    <string name="report_hint">Only we can read it, and addresses and keys are removed first.</string>
     <string name="report_w30">Last 30 min</string>
     <string name="report_w60">Last 60 min</string>
     <string name="report_note">What went wrong? (optional)</string>
@@ -143,7 +143,7 @@
     <string name="settings_use_relays_hint">Try reverse and DNS relay routes when direct protocols are blocked.</string>
     <string name="settings_carriers">Protocols</string>
     <string name="settings_carriers_hint">Empty selection means Automatic.</string>
-    <string name="settings_apply_next">Connection settings apply at the next connect.</string>
+    <string name="settings_apply_next">Changes apply the next time you connect.</string>
     <string name="settings_language">Language</string>
     <string name="settings_theme">Theme</string>
     <string name="theme_system">System</string>
@@ -153,6 +153,8 @@
     <string name="lang_en">English</string>
     <string name="lang_fa">فارسی</string>
     <string name="settings_dns_preset">Resolver</string>
+    <string name="settings_shaping">Hide traffic sizes</string>
+    <string name="settings_shaping_hint">Pads relay traffic to fixed sizes. Uses more data.</string>
     <string name="settings_doh">DNS over HTTPS</string>
     <string name="settings_doh_hint">For bypass and ECH lookups only.</string>
     <string name="dns_cloudflare">Cloudflare (1.1.1.1)</string>

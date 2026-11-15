@@ -12,6 +12,7 @@ data class ClientSettings(
     val dns: String = "1.1.1.1:53",
     val dnsPreset: String = "cloudflare",
     val doh: Boolean = false,
+    val shaping: Boolean = true,
     val directDomains: List<String> = emptyList(),
     val directCidrs: List<String> = emptyList(),
 )
@@ -82,6 +83,7 @@ fun parseSettings(json: String): ClientSettings {
         dns = o.optString("dns", "1.1.1.1:53"),
         dnsPreset = o.optString("dnsPreset", "cloudflare").ifEmpty { "cloudflare" },
         doh = o.optBoolean("doh", false),
+        shaping = o.optBoolean("shaping", true),
         directDomains = o.optJSONArray("directDomains")?.toStringList().orEmpty(),
         directCidrs = o.optJSONArray("directCidrs")?.toStringList().orEmpty(),
     )
@@ -94,6 +96,7 @@ fun settingsPatch(
     dnsPreset: String? = null,
     dns: String? = null,
     doh: Boolean? = null,
+    shaping: Boolean? = null,
     directDomains: List<String>? = null,
     directCidrs: List<String>? = null,
 ): String {
@@ -104,6 +107,7 @@ fun settingsPatch(
     if (dnsPreset != null) o.put("dnsPreset", dnsPreset)
     if (dns != null) o.put("dns", dns)
     if (doh != null) o.put("doh", doh)
+    if (shaping != null) o.put("shaping", shaping)
     if (directDomains != null) o.put("directDomains", JSONArray(directDomains))
     if (directCidrs != null) o.put("directCidrs", JSONArray(directCidrs))
     return o.toString()

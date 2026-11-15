@@ -64,10 +64,10 @@
     <string name="notifications_perm">اعلان‌ها</string>
     <string name="notifications_perm_hint">برای نمایش وضعیت VPN در اعلان، هنگام اتصال لازم است.</string>
     <string name="crash_reporting">ارسال گزارش ناشناس خرابی</string>
-    <string name="crash_reporting_hint">فقط هنگام خرابی برنامه ارسال می‌شود. ترافیک، دعوت‌نامه یا کلید حساب را شامل نمی‌شود. ممکن است در جاهایی که Sentry مسدود است کار نکند. هر زمان در تنظیمات قابل تغییر است.</string>
+    <string name="crash_reporting_hint">فقط هنگام خرابی برنامه ارسال می‌شود. ترافیک، دعوت‌نامه یا کلید حساب را شامل نمی‌شود. هر زمان در تنظیمات قابل تغییر است.</string>
     <string name="report_title">گزارش مشکل</string>
-    <string name="report_entry_hint">یک فایل رمزنگاری‌شده از لاگ‌های اخیر می‌سازد تا برای تیم Dot VPN ایمیل کنید.</string>
-    <string name="report_hint">فقط تیم Dot VPN می‌تواند فایل را بخواند. آدرس‌ها و کلیدها پیش از رمزنگاری حذف می‌شوند.</string>
+    <string name="report_entry_hint">در ساعت گذشته مشکلی داشتید؟ یک گزارش رمزنگاری‌شده برایمان بفرستید.</string>
+    <string name="report_hint">فقط ما می‌توانیم آن را بخوانیم و آدرس‌ها و کلیدها از قبل حذف می‌شوند.</string>
     <string name="report_w30">۳۰ دقیقه اخیر</string>
     <string name="report_w60">۶۰ دقیقه اخیر</string>
     <string name="report_note">چه مشکلی پیش آمد؟ (اختیاری)</string>
@@ -143,7 +143,7 @@
     <string name="settings_use_relays_hint">وقتی پروتکل‌های مستقیم مسدودند، مسیرهای رله معکوس و DNS را امتحان می‌کند.</string>
     <string name="settings_carriers">پروتکل‌ها</string>
     <string name="settings_carriers_hint">انتخاب خالی یعنی خودکار.</string>
-    <string name="settings_apply_next">تنظیمات اتصال در اتصال بعدی اعمال می‌شود.</string>
+    <string name="settings_apply_next">تغییرات در اتصال بعدی اعمال می‌شوند.</string>
     <string name="settings_language">زبان</string>
     <string name="settings_theme">پوسته</string>
     <string name="theme_system">سیستم</string>
@@ -153,6 +153,8 @@
     <string name="lang_en">English</string>
     <string name="lang_fa">فارسی</string>
     <string name="settings_dns_preset">حل‌کننده DNS</string>
+    <string name="settings_shaping">پنهان‌سازی اندازه ترافیک</string>
+    <string name="settings_shaping_hint">ترافیک رله را به اندازه‌های ثابت پر می‌کند. داده بیشتری مصرف می‌شود.</string>
     <string name="settings_doh">DNS روی HTTPS</string>
     <string name="settings_doh_hint">فقط برای جستجوهای عبور مستقیم و ECH.</string>
     <string name="dns_cloudflare">Cloudflare (1.1.1.1)</string>
