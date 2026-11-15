@@ -27,14 +27,14 @@ Beta. A live smoke test on an arm64 API 34 emulator passes (TCP and UDP through 
 
 ## How it works
 
-Android owns the device, routes and DNS; Go only reads and writes packets on the descriptor it is handed. Every socket the engine opens goes through `VpnService.protect` first, otherwise it would loop into the VPN.
+Android owns the device, routes and DNS; Go only reads and writes packets on the descriptor it is handed. Every socket the engine opens goes through `VpnService.protect` first, otherwise it would loop into the VPN. The connect ladder (direct tier, then reverse/dns) is the same as [dotvpn-client](https://github.com/payam-foundation/dotvpn-client#how-it-connects).
 
 ```mermaid
 flowchart LR
     ui["Compose UI<br/>status, invite, split tunnel"]
     svc["Foreground VpnService<br/>TUN device, routes, DNS"]
-    engine["Go engine, gomobile AAR<br/>dotvpn-client/mobile: gVisor stack, fallback ladder"]
-    server(["dotvpn-relay or dotvpn-core node"])
+    engine["Go engine, gomobile AAR<br/>dotvpn-client/mobile: gVisor, tiered race"]
+    server(["relay or core node"])
 
     ui -->|"connect, settings"| svc
     svc -->|"TUN fd + protect()"| engine
@@ -46,7 +46,32 @@ flowchart LR
     class server ext
 ```
 
-Design: `VpnService` owns the device, routes, DNS and split tunnel; the Go engine only reads and writes packets on the descriptor and protects its own sockets through `Protector`. The kill switch is Android's Always-on VPN with "Block connections without VPN". The AAR carries arm64 and x86_64 only and is linked for 16 KB pages.
+```mermaid
+sequenceDiagram
+    participant UI as Compose UI
+    participant Svc as DotvpnService
+    participant Go as mobile AAR
+    participant Edge as node or relay
+
+    UI->>Svc: connect / settings / split tunnel
+    Svc->>Svc: build TUN, routes, DNS
+    Svc->>Go: Mobile.start(TUN fd) + Protector
+    Go->>Edge: tiered race (direct then reverse/dns)
+    Go->>Go: probe /generate_204
+    Note over Svc,Go: kill switch = Always-on + block without VPN<br/>Go kill_switch ignored
+```
+
+### Invites
+
+Import `dv://` (account) or `dvr://` (relay opt-in) by deep link, QR scan or paste. `ImportInvite` writes YAML into app storage; product APIs (`Account`, `Relays`, `Ads`) match the desktop helper. Confirm-replace prompts when an invite would overwrite an existing account.
+
+### AAR contract
+
+`make aar` binds `../dotvpn-client/mobile` into `app/libs/dotvpn.aar` (arm64 + x86_64, 16 KB pages). This repo does not reimplement the ladder; it shells the shared Go engine.
+
+### What CI and lab cover
+
+Android CI builds the AAR, APK and JVM unit tests (plus optional emulator smoke). **[dotvpn-lab](https://github.com/payam-foundation/dotvpn-lab) does not build or run this app** — it black-boxes core/relay binaries and the client library/CLI. Mechanism proofs stay in lab; phone behaviour is this repo's CI and manual/instrumented runs.
 
 ## Install
 
@@ -64,7 +89,7 @@ Download `dotvpn.apk` from the [releases page](https://github.com/payam-foundati
 | Leaks while the tunnel is down, if Always-on with "Block connections without VPN" is on. | Leaks if you leave that setting off: Android then falls back to your normal connection. |
 | IPv6 leaks: routed into the tunnel and dropped by the user-space stack. | Apps you exclude with split tunnelling. |
 
-The Go `kill_switch` option is ignored on Android. The [lab](https://github.com/payam-foundation/dotvpn-lab#what-a-green-result-means) tests mechanisms, not whether the app works in any given country.
+The Go `kill_switch` option is ignored on Android. The [lab](https://github.com/payam-foundation/dotvpn-lab#what-a-green-result-means) proves stack mechanisms on core/relay/client binaries; it does not run this APK.
 
 ## Verify a release
 
