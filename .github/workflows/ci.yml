@@ -30,7 +30,7 @@ jobs:
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version-file: dotvpn-client/go.mod
-      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
         with:
           distribution: temurin
           java-version: "17"
@@ -55,6 +55,8 @@ jobs:
     permissions:
       contents: write
       id-token: write # keyless cosign signature
+    env:
+      PLAY_SERVICE_ACCOUNT_JSON: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -67,7 +69,7 @@ jobs:
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version-file: dotvpn-client/go.mod
-      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
         with:
           distribution: temurin
           java-version: "17"
@@ -78,24 +80,62 @@ jobs:
       - run: go install golang.org/x/mobile/cmd/gomobile@latest && gomobile init
       - uses: sigstore/cosign-installer@756fe2d284c7292c4e9b62c8a28f1e5629c59532 # v4.1.3
       # Keystore comes from a secret and lives only in the runner's temp dir.
-      - name: sign and build
+      # Without it the build still succeeds, debug-signed, so forks and fresh
+      # setups get a working APK; add the secrets and the next tag is release-signed.
+      - name: release key
+        id: key
+        env:
+          KS_B64: ${{ secrets.DOTVPN_KEYSTORE_B64 }}
+          KS_PASSWORD: ${{ secrets.DOTVPN_KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.DOTVPN_KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.DOTVPN_KEY_PASSWORD }}
+        run: |
+          if [ -n "$KS_B64" ] && [ -n "$KS_PASSWORD" ] && [ -n "$KEY_ALIAS" ] && [ -n "$KEY_PASSWORD" ]; then
+            echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/release.jks"
+            echo "signed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "signed=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::Keystore secrets not set: publishing a debug-signed APK. It cannot upgrade a release-signed install."
+          fi
+      - name: build
         env:
           ANDROID_NDK_HOME: ${{ env.ANDROID_HOME }}/ndk/28.2.13676358
-          KS_B64: ${{ secrets.DOTVPN_KEYSTORE_B64 }}
           DOTVPN_KEYSTORE_PASSWORD: ${{ secrets.DOTVPN_KEYSTORE_PASSWORD }}
           DOTVPN_KEY_ALIAS: ${{ secrets.DOTVPN_KEY_ALIAS }}
           DOTVPN_KEY_PASSWORD: ${{ secrets.DOTVPN_KEY_PASSWORD }}
           # Opt-in crash reporting DSN → BuildConfig.SENTRY_DSN (empty if unset).
           SENTRY_DSN_ANDROID: ${{ secrets.SENTRY_DSN_ANDROID }}
+          SIGNED: ${{ steps.key.outputs.signed }}
         run: |
-          export DOTVPN_KEYSTORE="$RUNNER_TEMP/release.jks"
-          echo "$KS_B64" | base64 -d > "$DOTVPN_KEYSTORE"
-          make release CLIENT=$GITHUB_WORKSPACE/dotvpn-client
-          cp app/build/outputs/apk/release/*.apk dotvpn.apk
-          sha256sum dotvpn.apk > checksums.txt
+          set -euo pipefail
+          if [ "$SIGNED" = true ]; then
+            export DOTVPN_KEYSTORE="$RUNNER_TEMP/release.jks"
+            make release release-aab CLIENT=$GITHUB_WORKSPACE/dotvpn-client
+            cp app/build/outputs/apk/release/*.apk dotvpn.apk
+            cp app/build/outputs/bundle/release/*.aab dotvpn.aab
+            sha256sum dotvpn.apk dotvpn.aab > checksums.txt
+          else
+            make apk CLIENT=$GITHUB_WORKSPACE/dotvpn-client
+            cp app/build/outputs/apk/debug/*.apk dotvpn-debugsigned.apk
+            sha256sum dotvpn-debugsigned.apk > checksums.txt
+          fi
           cosign sign-blob --yes --bundle checksums.txt.sigstore.json checksums.txt
-          rm -f "$DOTVPN_KEYSTORE"
+      - name: remove keystore
+        if: always()
+        run: rm -f "$RUNNER_TEMP/release.jks"
       - env:
           GH_TOKEN: ${{ github.token }}
-        # release-please already created the release; attach the signed artifacts.
-        run: gh release upload "$GITHUB_REF_NAME" dotvpn.apk checksums.txt checksums.txt.sigstore.json --clobber
+        # release-please already created the release; attach the artifacts.
+        run: gh release upload "$GITHUB_REF_NAME" dotvpn*.apk dotvpn*.aab checksums.txt checksums.txt.sigstore.json --clobber
+      # Google Play: internal track until you promote it in the Play Console. The
+      # first upload of a new app must be done by hand there; check targetSdk
+      # against Play's current requirement before the first submission.
+      - name: play upload
+        if: steps.key.outputs.signed == 'true' && env.PLAY_SERVICE_ACCOUNT_JSON != ''
+        uses: r0adkll/upload-google-play@e738b9dd8f2476ea806d921b64aacd24f34515a5 # v1.1.5
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: dot.vpn.payam
+          releaseFiles: dotvpn.aab
+          track: internal
+          status: completed
