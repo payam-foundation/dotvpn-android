@@ -6,7 +6,7 @@ AAR    := app/libs/dotvpn.aar
 # gomobile often ignores NDK r28's default, so force the linker flag (golang/go#74839).
 CGO_ANDROID_PAGEFLAGS := -Wl,-z,max-page-size=16384
 
-.PHONY: aar apk release test vet clean check-16kb
+.PHONY: aar apk release release-aab test vet clean check-16kb
 aar:
 	mkdir -p $(dir $(AAR))
 	cd $(CLIENT) && CGO_LDFLAGS="$$(go env CGO_LDFLAGS) $(CGO_ANDROID_PAGEFLAGS)" \
@@ -44,6 +44,10 @@ apk: aar
 # Signed with DOTVPN_KEYSTORE* from the environment (CI secrets); unsigned without.
 release: aar
 	./gradlew --no-daemon assembleRelease
+
+# Play Store bundle; signed with the upload key from DOTVPN_KEYSTORE* like `release`.
+release-aab: aar
+	./gradlew --no-daemon bundleRelease
 
 clean:
 	rm -f $(AAR) $(AAR:.aar=-sources.jar)
