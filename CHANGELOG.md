@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/payam-foundation/dotvpn-android/compare/v0.4.0...v0.5.0) (2026-11-15)
+
+
+### Features
+
+* **android:** relay size shaping toggle and Settings copy sync ([#30](https://github.com/payam-foundation/dotvpn-android/issues/30)) ([f2b57ab](https://github.com/payam-foundation/dotvpn-android/commit/f2b57ab43906648e9574fb3bb72ee625a4bb8a37))
+
 ## [0.4.0](https://github.com/payam-foundation/dotvpn-android/compare/v0.3.0...v0.4.0) (2026-11-14)
 
 
